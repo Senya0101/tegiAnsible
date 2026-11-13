@@ -1,0 +1,33 @@
+---
+- name: Configure server with tagged tasks
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      tags: packages
+
+    - name: Install working applications and packages
+      ansible.builtin.apt:
+        name:
+          - git
+          - make
+          - nodejs
+          - npm
+        state: present
+      tags: packages
+
+    - name: Create users arya, sansa, tirion
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: present
+        create_home: true
+        shell: /bin/bash
+      loop:
+        - arya
+        - sansa
+        - tirion
+      tags: users
